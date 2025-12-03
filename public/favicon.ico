@@ -1,0 +1,5 @@
+from PIL import Image
+
+# Create a 16x16 red square as favicon
+img = Image.new('RGB', (16, 16), color=(255, 0, 0))
+img.save('favicon.ico')
