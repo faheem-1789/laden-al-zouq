@@ -1,38 +1,44 @@
+// app/orders/page.js
 "use client";
 import { useEffect, useState } from "react";
 import { apiRequest } from "../../lib/api";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState([]);
+  const [orders,setOrders]=useState([]);
+  const [loading,setLoading]=useState(true);
 
   const fetchOrders = async () => {
-    const data = await apiRequest("/orders/customer");
-    setOrders(data);
+    setLoading(true);
+    try {
+      const data = await apiRequest('/orders/customer', 'GET', null, { requireAuth: true });
+      setOrders(data || []);
+    } catch (err) {
+      console.error(err);
+      alert(err.message || String(err));
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchOrders(); }, []);
+  useEffect(()=>{ fetchOrders() },[]);
+
+  if (loading) return <div className="p-6">Loading orders...</div>;
 
   return (
-    <div>
+    <div className="max-w-3xl mx-auto">
       <h2 className="text-2xl font-bold mb-4">My Orders</h2>
-      {orders.length === 0 ? (
-        <p>No orders yet.</p>
-      ) : (
+      {orders.length===0 ? <div>No orders yet.</div> : (
         <div className="space-y-4">
-          {orders.map(order => (
-            <div key={order.id} className="p-4 bg-white rounded shadow">
-              <p><strong>Order ID:</strong> {order.id}</p>
-              <p><strong>Status:</strong> {order.status}</p>
-              <p><strong>Delivery:</strong> {order.delivery}</p>
-              <p><strong>Total:</strong> {order.total} SAR</p>
+          {orders.map(o => (
+            <div key={o.id} className="bg-white p-4 rounded shadow">
+              <div className="flex justify-between"><div><strong>Order #{o.id}</strong> — {o.status}</div><div>{new Date(o.created_at).toLocaleString()}</div></div>
               <div className="mt-2">
-                <strong>Items:</strong>
-                <ul className="list-disc ml-6">
-                  {order.cart.map((i, idx) => (
-                    <li key={idx}>{i.item.name} x {i.quantity} {i.note && `(${i.note})`}</li>
-                  ))}
-                </ul>
+                {o.items.map((it,idx)=> (
+                  <div key={idx} className="flex justify-between border-b py-1">
+                    <div>{it.name} x {it.quantity}</div>
+                    <div>{(it.unit_price * it.quantity).toFixed(2)} SAR</div>
+                  </div>
+                ))}
               </div>
+              <div className="mt-2 text-right font-bold">Total: {o.total} SAR</div>
             </div>
           ))}
         </div>
