@@ -9,7 +9,6 @@ export default function MenuPage() {
 
   const fetchMenu = async () => {
     try {
-      // requireAuth: false -> public endpoint
       const data = await apiRequest("/menu", "GET", null, { requireAuth: false });
       setMenu(Array.isArray(data) ? data : []);
     } catch (err) {
