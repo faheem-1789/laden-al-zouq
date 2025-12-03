@@ -1,0 +1,4 @@
+# run locally (need pillow)
+from PIL import Image
+img = Image.new('RGB', (16,16), (200,30,45))
+img.save('favicon.ico')
