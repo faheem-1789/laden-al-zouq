@@ -14,6 +14,7 @@ export default function Navbar() {
     <nav className="bg-white shadow p-4 flex justify-between">
       <div className="font-bold text-xl">Lazzat Al Zouq</div>
       <div className="space-x-4">
+        <Link href="/profile">profile</Link>
         <Link href="/menu">Menu</Link>
         {user ? (
           <button onClick={() => auth.signOut()}>Logout</button>
